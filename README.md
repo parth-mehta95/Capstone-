@@ -1,7 +1,7 @@
-## Python Backend API Endpoints
+## OOP Backend Architecture
 
-This project includes a Python Flask backend API for the React Native capstone app.  
-The backend demonstrates structured data models, lists, dictionaries, filtering, transformation logic, and JSON API responses.
+This backend has been refactored using Object-Oriented Programming principles.  
+The code now separates data models, service logic, and route handling.
 
 ## Backend Folder Structure
 
@@ -10,5 +10,5 @@ backend/
 ├── app.py
 ├── models.py
 ├── routes.py
-├── data_utils.py
+├── services.py
 └── requirements.txt

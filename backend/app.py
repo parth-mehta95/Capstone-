@@ -4,7 +4,9 @@ from routes import api
 
 
 def create_app():
-    """Creates and configures the Flask app."""
+    """
+    Creates and configures the Flask application.
+    """
 
     app = Flask(__name__)
     app.register_blueprint(api, url_prefix="/api")
@@ -12,16 +14,18 @@ def create_app():
     @app.route("/", methods=["GET"])
     def home():
         return {
-            "message": "React Native Capstone Python Backend API",
+            "message": "Capstone Backend using OOP Service Layer",
             "endpoints": [
                 "/api/health",
+                "/api/users",
+                "/api/users/active",
+                "/api/users/emails",
                 "/api/products",
                 "/api/products/summary",
-                "/api/products/1",
                 "/api/products/filter?category=education",
-                "/api/users",
                 "/api/orders",
-            ],
+                "/api/orders/user/1"
+            ]
         }
 
     return app
