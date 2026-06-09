@@ -1,28 +1,26 @@
 from flask import Flask
 
-try:
-    from .routes import api
-except ImportError:
-    from routes import api
+from routes import api
 
 
 def create_app():
-    """
-    Creates and configures the Flask backend app.
-    """
+    """Creates and configures the Flask app."""
 
     app = Flask(__name__)
-
     app.register_blueprint(api, url_prefix="/api")
 
     @app.route("/", methods=["GET"])
     def home():
         return {
-            "message": "React Native Capstone Backend Service",
-            "available_routes": [
+            "message": "React Native Capstone Python Backend API",
+            "endpoints": [
                 "/api/health",
+                "/api/products",
+                "/api/products/summary",
+                "/api/products/1",
+                "/api/products/filter?category=education",
                 "/api/users",
-                "/api/tasks",
+                "/api/orders",
             ],
         }
 

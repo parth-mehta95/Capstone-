@@ -1,21 +1,30 @@
 from flask import Blueprint, jsonify, request
 
-try:
-    from .models import ApiResponse, TaskItem, UserProfile
-except ImportError:
-    from models import ApiResponse, TaskItem, UserProfile
-
+from data_utils import (
+    create_product_summary,
+    filter_products_by_category,
+    filter_products_by_price,
+    find_product_by_id,
+)
+from models import ApiResponse, Order, Product, User
 
 api = Blueprint("api", __name__)
 
-users = [
-    UserProfile(1, "John Doe", "john@example.com"),
-    UserProfile(2, "Jane Smith", "jane@example.com"),
+products = [
+    Product(1, "React Native Course", "education", 49.99, True).to_dict(),
+    Product(2, "Mobile UI Kit", "design", 29.99, True).to_dict(),
+    Product(3, "Backend API Template", "development", 59.99, False).to_dict(),
+    Product(4, "JavaScript Handbook", "education", 19.99, True).to_dict(),
 ]
 
-tasks = [
-    TaskItem(1, "Complete React Native setup", True),
-    TaskItem(2, "Connect backend service", False),
+users = [
+    User(1, "Parth Mehta", "parth@example.com", ["education", "development"]).to_dict(),
+    User(2, "John Doe", "john@example.com", ["design"]).to_dict(),
+]
+
+orders = [
+    Order(1, 1, [1, 3], "processing").to_dict(),
+    Order(2, 2, [2], "completed").to_dict(),
 ]
 
 
@@ -23,85 +32,95 @@ tasks = [
 def health_check():
     response = ApiResponse(
         success=True,
-        message="Backend service is running",
+        message="Backend API is running",
         data={"status": "ok"},
+    )
+    return jsonify(response.to_dict()), 200
+
+
+@api.route("/products", methods=["GET"])
+def get_products():
+    response = ApiResponse(
+        success=True,
+        message="Products fetched successfully",
+        data=products,
+    )
+    return jsonify(response.to_dict()), 200
+
+
+@api.route("/products/summary", methods=["GET"])
+def get_product_summary():
+    summary = create_product_summary(products)
+
+    response = ApiResponse(
+        success=True,
+        message="Product summary generated successfully",
+        data=summary,
+    )
+    return jsonify(response.to_dict()), 200
+
+
+@api.route("/products/<int:product_id>", methods=["GET"])
+def get_product_by_id(product_id):
+    product = find_product_by_id(products, product_id)
+
+    if not product:
+        response = ApiResponse(
+            success=False,
+            message="Product not found",
+        )
+        return jsonify(response.to_dict()), 404
+
+    response = ApiResponse(
+        success=True,
+        message="Product fetched successfully",
+        data=product,
+    )
+    return jsonify(response.to_dict()), 200
+
+
+@api.route("/products/filter", methods=["GET"])
+def filter_products():
+    category = request.args.get("category")
+    max_price = request.args.get("max_price", type=float)
+
+    filtered_products = products
+
+    if category:
+        filtered_products = filter_products_by_category(
+            filtered_products,
+            category,
+        )
+
+    if max_price is not None:
+        filtered_products = filter_products_by_price(
+            filtered_products,
+            max_price,
+        )
+
+    response = ApiResponse(
+        success=True,
+        message="Products filtered successfully",
+        data=filtered_products,
     )
     return jsonify(response.to_dict()), 200
 
 
 @api.route("/users", methods=["GET"])
 def get_users():
-    data = [user.to_dict() for user in users]
-
     response = ApiResponse(
         success=True,
         message="Users fetched successfully",
-        data=data,
+        data=users,
     )
     return jsonify(response.to_dict()), 200
 
 
-@api.route("/users", methods=["POST"])
-def create_user():
-    payload = request.get_json()
-
-    if not payload or "name" not in payload or "email" not in payload:
-        response = ApiResponse(
-            success=False,
-            message="Name and email are required",
-        )
-        return jsonify(response.to_dict()), 400
-
-    new_user = UserProfile(
-        id=len(users) + 1,
-        name=payload["name"],
-        email=payload["email"],
-    )
-
-    users.append(new_user)
-
+@api.route("/orders", methods=["GET"])
+def get_orders():
     response = ApiResponse(
         success=True,
-        message="User created successfully",
-        data=new_user.to_dict(),
-    )
-    return jsonify(response.to_dict()), 201
-
-
-@api.route("/tasks", methods=["GET"])
-def get_tasks():
-    data = [task.to_dict() for task in tasks]
-
-    response = ApiResponse(
-        success=True,
-        message="Tasks fetched successfully",
-        data=data,
+        message="Orders fetched successfully",
+        data=orders,
     )
     return jsonify(response.to_dict()), 200
-
-
-@api.route("/tasks", methods=["POST"])
-def create_task():
-    payload = request.get_json()
-
-    if not payload or "title" not in payload:
-        response = ApiResponse(
-            success=False,
-            message="Task title is required",
-        )
-        return jsonify(response.to_dict()), 400
-
-    new_task = TaskItem(
-        id=len(tasks) + 1,
-        title=payload["title"],
-        completed=payload.get("completed", False),
-    )
-
-    tasks.append(new_task)
-
-    response = ApiResponse(
-        success=True,
-        message="Task created successfully",
-        data=new_task.to_dict(),
-    )
-    return jsonify(response.to_dict()), 201

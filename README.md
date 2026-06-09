@@ -1,6 +1,7 @@
-## Python Backend Service Stub
+## Python Backend API Endpoints
 
-This project includes a basic Python Flask backend service for React Native integration. The backend contains mock API endpoints, sample data models, and JSON response handling.
+This project includes a Python Flask backend API for the React Native capstone app.  
+The backend demonstrates structured data models, lists, dictionaries, filtering, transformation logic, and JSON API responses.
 
 ## Backend Folder Structure
 
@@ -9,4 +10,5 @@ backend/
 ├── app.py
 ├── models.py
 ├── routes.py
+├── data_utils.py
 └── requirements.txt
