@@ -1,14 +1,12 @@
-## OOP Backend Architecture
+## OOP-Based Data Validation Layer
 
-This backend has been refactored using Object-Oriented Programming principles.  
-The code now separates data models, service logic, and route handling.
+This backend includes an OOP-based validation layer for request validation before API data is processed.
 
-## Backend Folder Structure
+## Validation Architecture
 
 ```text
-backend/
-├── app.py
-├── models.py
-├── routes.py
-├── services.py
-└── requirements.txt
+ValidationService
+├── UserValidator
+├── ProductValidator
+├── OrderValidator
+└── DataValidator
